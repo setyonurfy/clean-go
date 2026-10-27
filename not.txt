@@ -2,8 +2,8 @@
 ...
 /cmd                    //Entry point
 /internal               //internal workflow
-    /entity             //Bussiness domain model
-    /usecase            //Interface & main bussiness logic
+    /entity             //Business domain model
+    /usecase            //Interface & main business logic
     /repository         //Interface (abstraction) pf data layer
     /infrastructure     //Implementation of data layer 
     /delivery           // Handler of usecase
