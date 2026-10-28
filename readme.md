@@ -21,24 +21,58 @@
 
 ...
 
-## dependency
-gin ->  'go get github.com/gin-gonic/gin'
-
-pq  ->  'go get github.com/lib/pq'
-
-godotenv  ->  'go get github.com/joho/godotenv'
-
-sqlx  ->  'go get github.com/jmoiron/sqlx'
-
 ## Database
 
-DB: Postgresql
+DB: PostgreSQL
 
-'golang-migrate' -> Create & Execute migration (migration tool)
+`golang-migrate` -> create & execute migrations (migration tool)
 
-to install 'golang-migrte' using homebrew
+### Install golang-migrate
 
-...
+Using Homebrew (macOS 11+):
 
+```
 brew install golang-migrate
-...
+```
+
+Using Go (works on older macOS, e.g. Catalina):
+
+```
+GOTOOLCHAIN=local go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.2
+```
+
+Make sure `$(go env GOPATH)/bin` is in your `PATH`.
+
+### Create the database
+
+`migrate` does not create the database itself, so create it first:
+
+```
+createdb -U postgres -h localhost clean-go
+```
+
+or via `psql`:
+
+```
+CREATE DATABASE "clean-go";
+```
+
+### Migrations
+
+Create a new migration:
+
+```
+./migrations/create-migration.sh create_users_table
+```
+
+Run migrations:
+
+```
+./migrations/migrate.sh up
+```
+
+Roll back the last migration:
+
+```
+./migrations/migrate.sh down 1
+```
