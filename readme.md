@@ -76,3 +76,22 @@ Roll back the last migration:
 ```
 ./migrations/migrate.sh down 1
 ```
+
+### Database connection
+ 
+The connection is initialized in `internal/infrastructure/pgsql/init.go` using `sqlx` and the environment variables above. It is called from `cmd/main.go` when the app starts.
+ 
+## Run
+ 
+From the project root (the folder that contains `go.mod`):
+ 
+```
+go run cmd/main.go
+```
+ 
+If the connection works, you will see:
+ 
+```
+Successfully connected to the database
+PGSQL database initialized successfully
+```
