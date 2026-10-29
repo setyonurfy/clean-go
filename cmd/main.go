@@ -1,14 +1,14 @@
 package main
 
 import (
-	"log"
 	"clean-go/internal/infrastructure/pgsql"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"log"
 )
 
-func main()  {
+func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Error loading .env file")
@@ -21,7 +21,7 @@ func main()  {
 	}
 	if pgdb != nil {
 		log.Println("PGSQL database initialized successfully")
-		
+
 	}
 	r := gin.Default()
 

@@ -2,9 +2,9 @@ package pgsql
 
 import (
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"log"
 	"os"
-	"github.com/jmoiron/sqlx"
 )
 
 func Init() (*sqlx.DB, error) {
@@ -15,7 +15,7 @@ func Init() (*sqlx.DB, error) {
 	dbPort := os.Getenv("DATABASE_PORT")
 
 	if dbUser == "" || dbName == "" || dbPass == "" || dbHost == "" || dbPort == "" {
-		return nil, fmt.Errorf("database configuration is not set properly")	
+		return nil, fmt.Errorf("database configuration is not set properly")
 	}
 
 	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable", dbUser, dbPass, dbName, dbHost, dbPort)
