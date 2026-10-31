@@ -157,10 +157,71 @@ type AuthUsecase interface {
 - `Login` finds the user by email, compares the password with the bcrypt hash, and returns a signed JWT (HS256, valid for 24 hours) containing `user_id`. A wrong email and a wrong password return the same error message (`invalid email or password`).
 - `NewAuthUsecase(repo, jwtSecret)` receives the repository and the JWT secret, so the usecase does not depend on the database directly and can be tested without one.
 
-### Status
+### Environment variables
 
-- [x] Entity
-- [x] Repository interface
+Create a `.env` file in the project root (already ignored by `.gitignore`):
+
+```
+DATABASE_USER=postgres
+DATABASE_PASSWORD=postgres
+DATABASE_NAME=clean-go
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+JWT_SECRET=<random string, generate with: openssl rand -hex 32>
+```
+
+## API
+
+Base URL: `http://localhost:8080`
+
+### POST /register
+
+Body: `{"username":"budi","email":"budi@example.com","password":"secret123"}`
+
+| Status | Meaning |
+| --- | --- |
+| 201 | `User registered successfully` |
+| 400 | Invalid body, or `email already exists` |
+
+### POST /login
+
+Body: `{"email":"budi@example.com","password":"secret123"}`
+
+| Status | Meaning |
+| --- | --- |
+| 200 | `{"token":"<jwt>"}` (HS256, valid for 24 hours, contains `user_id`) |
+| 400 | Invalid body |
+| 401 | `invalid email or password` |
+
+## Dependency wiring
+
+`cmd/main.go` connects the layers (dependency injection):
+
+```go
+userRepo := pgsql.NewUserRepoPG(pgdb)                         // repository (PostgreSQL)
+authUC := usecase.NewAuthUsecase(userRepo, os.Getenv("JWT_SECRET")) // usecase
+handler.NewAuthHandler(r, authUC)                             // HTTP routes
+```
+
+Flow: `HTTP request -> handler -> usecase -> repository -> PostgreSQL`
+
+## Status
+
+- [x] Entity (`User`, `Register`, `Login`)
+- [x] Repository interface (`UserRepository`, `ErrNotFound`)
 - [x] Auth usecase (login & register)
-- [ ] Repository implementation (pgsql)
-- [ ] Delivery (HTTP handler)
+- [x] Repository implementation (pgsql)
+- [x] Delivery: auth handler (`/login`, `/register`)
+- [x] Server runs and routes are registered
+- [ ] Manual API test (REST Client / curl)
+- [ ] Unit tests for the usecase (mock repository)
+- [ ] Input validation (empty email, password length)
+- [ ] Unique index on `users.email`
+- [ ] JWT middleware for protected routes
+
+## Next steps
+
+1. Test `/register` and `/login` manually and check that the password is stored as a bcrypt hash (`$2a$...`).
+2. Learn and write unit tests for the auth usecase using a mock repository.
+3. Add input validation and a unique email index (new migration).
+4. Add JWT middleware and a protected route.

@@ -29,7 +29,7 @@ func NewAuthUsecase(repo repository.UserRepository, jwtSecret string) AuthUsecas
 
 func (a *authUsecase) Login(email string, password string) (string, error) {
 	user, err := a.repo.GetByEmail(email)
-	if err != nil || user == nil {
+	if err != nil {
 		return "", errors.New("invalid email or password")
 
 	}
@@ -73,10 +73,5 @@ func (a *authUsecase) Register(username string, email string, password string) e
 		Password: string(hashedPassword),
 	}
 
-	err = a.repo.Create(user)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return a.repo.Create(user)
 }
